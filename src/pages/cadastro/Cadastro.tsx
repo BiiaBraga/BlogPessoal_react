@@ -1,42 +1,47 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react"
-import { useNavigate } from "react-router-dom"
-import type Usuario from "../../models/Usuario"
-import { cadastrarUsuario } from "../../services/Service"
-import { ClipLoader } from "react-spinners"
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
+import type Usuario from "../../models/Usuario";
+import { cadastrarUsuario } from "../../services/Service";
+import { ToastAlerta } from "../../utils/ToastAlert";
+
 
 function Cadastro() {
 
   const navigate = useNavigate()
-
+  
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [confirmarSenha, setConfirmarSenha] = useState<string>("")
+
+  const[confirmarSenha, setConfirmarSenha] = useState<string>("")
+
   const [usuario, setUsuario] = useState<Usuario>({
     id: 0,
-    nome: "",
-    usuario: "",
-    senha: "",
-    foto: "",   
+    nome: '',
+    usuario: '',
+    senha: '',
+    foto: ''
   })
-
+  
   useEffect(() => {
-       if(usuario.id !== 0){
-          retornar()
-       }
-  },[usuario])
+    if (usuario.id !== 0){
+      retornar()
+    }
+  }, [usuario])
 
   function retornar(){
-    navigate('/login')
+    navigate('/')
   }
 
   function atualizarEstado(e: ChangeEvent<HTMLInputElement>){
-        setUsuario({
-          ...usuario,
-          [e.target.name] : e.target.value
-        })
+    setUsuario({
+      ...usuario,
+      [e.target.name]: e.target.value
+    })
+
   }
 
   function handleConfirmarSenha(e: ChangeEvent<HTMLInputElement>){
-        setConfirmarSenha(e.target.value)
+    setConfirmarSenha(e.target.value)
   }
 
   async function cadastrarNovoUsuario(e: FormEvent<HTMLFormElement>){
@@ -48,20 +53,20 @@ function Cadastro() {
 
       try{
         await cadastrarUsuario(`/usuarios/cadastrar`, usuario, setUsuario)
-        alert('Usuário cadastrado com sucesso!')
+        ToastAlerta('Usuário cadastrado com sucesso!', 'sucesso')
       }catch(error){
-        alert('Erro ao cadastrar o usuário!')
+        ToastAlerta('Erro ao cadastrar o usuário!', 'erro')
       }
     }else{
-      alert('Dados do usuário inconsistentes! Verifique as informações do cadastro.')
+      ToastAlerta('Dados do usuário inconsistentes! Verifique as informações do cadastro.', 'erro')
       setUsuario({...usuario, senha: ''})
       setConfirmarSenha('')
     }
 
     setIsLoading(false)
   }
-  
-   return (
+
+  return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 h-screen 
             place-items-center font-bold">
@@ -160,10 +165,6 @@ function Cadastro() {
       </div>
     </>
   )
-
-
-
-  
 }
 
 export default Cadastro
